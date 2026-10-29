@@ -1,0 +1,36 @@
+trigger: none
+
+parameters:
+- name: environment
+  displayName: Ambiente de despliegue
+  type: string
+  default: dev
+  values:
+  - dev
+  - qa
+  - prod
+
+variables:
+- group: configuracion-app
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: |
+    echo "Aplicación : $(APP_NAME)"
+    echo "Responsable: $(OWNER)"
+    echo "Versión    : $(APP_VERSION)"
+    echo "Ambiente   : ${{ parameters.environment }}"
+  displayName: Resumen de configuración
+
+- script: |
+    if [ -n "$API_TOKEN" ]; then
+      echo "API_TOKEN está definido (valor oculto)"
+    else
+      echo "API_TOKEN NO está definido"
+      exit 1
+    fi
+  displayName: Usar el secreto sin imprimirlo
+  env:
+    API_TOKEN: $(API_TOKEN)
